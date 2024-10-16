@@ -1,0 +1,155 @@
+Article here: https://medium.com/@azmi.ahmad/refactoring-a-node-js-express-project-into-multiple-docker-services-using-a-monorepo-and-lerna-7df237f64095
+
+If you’re working on a Node.js Express project that needs to be split into multiple independent services, you may be wondering how to manage shared dependencies and common code. One solution is to use a monorepo and Lerna to manage your project, which can help to simplify dependency management, testing, and deployment.
+
+In this story, we’ll walk through how to refactor a Node.js-Express project into two Docker images using a monorepo and Lerna. We’ll cover how to create a monorepo, split your code into independent packages, manage dependencies between packages, and build and deploy Docker images for each package.
+
+Setting up the Monorepo
+The first step is to set up a new directory for your monorepo and initialize it with a package.json file:
+
+mkdir my-monorepo
+cd my-monorepo
+npm init -y
+Next, install Lerna as a development dependency:
+
+npm install --save-dev lerna
+Initialize Lerna with a default configuration:
+
+npx lerna init
+Creating Independent Packages
+To split your code into independent packages, create a new directory for each package in the packages directory. In this example, we'll create two packages: main-service and sub-service.
+
+cd packages
+mkdir main-service
+mkdir sub-service
+Next, create a package.json file for each package, specifying the package name and any required dependencies:
+
+// packages/main-service/package.json
+{
+  "name": "main-service",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "my-shared-module": "^1.0.0"
+  }
+}
+
+// packages/sub-service/package.json
+{
+  "name": "sub-service",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "my-shared-module": "^1.0.0"
+  }
+}
+Note that both packages depend on a shared module called my-shared-module, which we'll create later.
+
+Create a new package called my-shared-module in the packages directory, and move any common code or models into this package:
+
+mkdir my-shared-module
+Create a package.json file for the my-shared-module package, specifying the package name and any required dependencies:
+
+// packages/my-shared-module/package.json
+{
+  "name": "my-shared-module"
+}
+Add the my-shared-module package as a dependency in the package.json files for the main-service and sub-service packages:
+
+// packages/main-service/package.json
+{
+  "name": "main-service",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "my-shared-module": "^1.0.0"
+  }
+}
+
+// packages/sub-service/package.json
+{
+  "name": "sub-service",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "my-shared-module": "^1.0.0"
+  }
+}
+Linking Packages
+To allow the main-service and sub-service packages to use the my-shared-module package, we need to use npm link to link the packages together.
+
+First, navigate to the my-shared-module directory and run npm link:
+
+cd packages/my-shared-module
+npm link
+Next, navigate to the main-service directory and run npm link my-shared-module to link the package:
+
+cd ../main-service
+npm link my-shared-module
+Do the same for the sub-service package:
+
+cd ../sub-service
+npm link my-shared-module
+Now, the main-service and sub-service packages can use the my-shared-module package as if it were installed locally.
+
+Building and Running Docker Images
+To build and run Docker images for each package, we’ll use a Dockerfile in each package directory. Here’s an example Dockerfile for the main-service package:
+
+# Dockerfile for main-service package
+FROM node:18-bullseye-slim
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "npm", "start" ]
+Note that we start with a Node.js 18 base image, install dependencies, copy the code into the image, expose port 3000, and start the application using npm start.
+
+Create a similar Dockerfile for the sub-service package.
+
+Next, we’ll use Lerna to build and publish Docker images for each package. First, add the following scripts to the root package.json file:
+
+{
+  "scripts": {
+    "build": "lerna run build",
+    "docker:build": "lerna run docker:build",
+    "docker:publish": "lerna run docker:publish"
+  }
+}
+These scripts will allow us to build all packages, build Docker images for each package, and publish Docker images to a registry.
+
+Add the following docker scripts to the package.json files for the main-service and sub-service packages:
+
+// packages/main-service/package.json
+{
+  "name": "main-service",
+  "scripts": {
+    "docker:build": "docker build -t my-registry/main-service .",
+    "docker:publish": "docker push my-registry/main-service"
+  }
+}
+
+// packages/sub-service/package.json
+{
+  "name": "sub-service",
+  "scripts": {
+    "docker:build": "docker build -t my-registry/sub-service .",
+    "docker:publish": "docker push my-registry/sub-service"
+  }
+}
+Note that we’re using a private registry called my-registry to publish the images. You'll need to modify these scripts to use your own registry.
+
+To build and publish the Docker images, run the following commands:
+
+npm run build
+npm run docker:build
+npm run docker:publish
+This will build all packages, build Docker images for each package, and publish the images to the registry.
+
+Conclusion
+In this article, we’ve walked through how to refactor a Node.js Express project into two Docker images using a monorepo and Lerna. We’ve covered how to create a monorepo, split your code into independent packages, manage dependencies between packages, and build and deploy Docker images for each package.
+
+Using a monorepo and Lerna can help to simplify dependency management, testing, and deployment, and can make it easier to split your project into independent services.
+
