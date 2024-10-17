@@ -1,11 +1,34 @@
-import { Response } from "express";
-import prismaClient from "prisma-client";
+// External packages
+import http from "http";
+import cors from "cors";
 const express = require("express");
+import { Response } from "express";
+import { Server } from "socket.io";
+
+// Shared packages
+import prismaClient from "prisma-client";
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 app.get("/", async (req: Request, res: Response) => {
-  const posts = await prismaClient.post?.findMany();
-  return res.json({ success: "ok!!", posts });
+  const messages = await prismaClient.message?.findMany();
+  return res.json({ success: "ok!!", messages });
 });
 
-app.listen(PORT, () => console.log(`API is listening on port ${PORT}`));
+io.on("connection", (socket) => {
+  socket.on("send-msg", (data: any) => {
+    io.emit("receive-msg", data)
+  });
+});
+
+server.listen(3000, () => {
+  console.log("Server listening to port 3000");
+});
