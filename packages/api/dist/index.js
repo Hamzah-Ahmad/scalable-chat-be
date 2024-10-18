@@ -16,30 +16,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
 const cors_1 = __importDefault(require("cors"));
 const express = require("express");
-const socket_io_1 = require("socket.io");
+const pubsub_1 = __importDefault(require("pubsub"));
 // Shared packages
 const prisma_client_1 = __importDefault(require("prisma-client"));
+const socket_1 = __importDefault(require("./socket"));
 const app = express();
 const server = http_1.default.createServer(app);
-const io = new socket_io_1.Server(server, {
-    cors: {
-        origin: "*",
-    },
-});
-const PORT = process.env.PORT || 3000;
+const io = new socket_1.default(server).io;
 app.use((0, cors_1.default)());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = yield ((_a = prisma_client_1.default.message) === null || _a === void 0 ? void 0 : _a.findMany());
     return res.json({ success: "ok!!", messages });
 }));
-io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on("send-msg", (data) => {
-        console.log("data: ", data);
-        io.emit("receive-msg", data);
-    });
-});
 server.listen(3000, () => {
-    console.log("listening on *:3000");
+    console.log("Server listening to port 3000");
+    console.log((0, pubsub_1.default)());
+});
+io.on("connection", (socket) => {
+    socket.on("send-msg", (data) => {
+        io.emit("receive-msg", `New ${data}`);
+    });
 });
