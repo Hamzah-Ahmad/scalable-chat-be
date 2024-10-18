@@ -12,7 +12,7 @@ async function main() {
 // main();
 
 function PubSubTest() {
-    console.log("PUB SUB TEST")
+    console.log("PUB SUB TEST@@")
 }
 
-export default PubSubTest()
+export default PubSubTest;

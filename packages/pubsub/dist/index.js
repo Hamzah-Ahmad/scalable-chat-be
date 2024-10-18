@@ -19,4 +19,5 @@ function main() {
         yield subscriber_1.default.subscribe('MESSAGE', (message) => console.log(`LOGGING MESSAGE: ${message}`));
     });
 }
+
 main();
