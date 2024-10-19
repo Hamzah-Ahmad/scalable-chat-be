@@ -5,10 +5,10 @@ const express = require("express");
 import { Response } from "express";
 import { Server } from "socket.io";
 
-
 // Shared packages
 import prismaClient from "prisma-client";
 import SocketService from "./socket";
+import { publisher, subscriber } from "pubsub";
 
 const app = express();
 const server = http.createServer(app);
@@ -25,8 +25,13 @@ server.listen(3000, () => {
   console.log("Server listening to port 3000");
 });
 
-io.on("connection", (socket) => {
-  socket.on("send-msg", (data: any) => {
-    io.emit("receive-msg", `New ${data}`);
+io.on("connection", async (socket) => {
+  socket.on("send-msg", async (data: any) => {
+    await publisher.publish("MESSAGE", data);
+    // io.emit("receive-msg", `New ${data}`);
+  });
+
+  subscriber.subscribe("MESSAGE", (message) => {
+    io.emit("receive-msg", `Received ${message}`);
   });
 });

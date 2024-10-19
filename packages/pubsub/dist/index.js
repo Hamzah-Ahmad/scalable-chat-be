@@ -8,16 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const subscriber_1 = __importDefault(require("./subscriber"));
+exports.subscriber = exports.publisher = void 0;
+const redis_1 = require("redis");
+exports.publisher = (0, redis_1.createClient)();
+exports.subscriber = (0, redis_1.createClient)();
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield subscriber_1.default.connect();
-        yield subscriber_1.default.subscribe('MESSAGE', (message) => console.log(`LOGGING MESSAGE: ${message}`));
+        yield exports.publisher.connect();
+        yield exports.subscriber.connect();
+        yield exports.subscriber.subscribe("MESSAGE", (message) => console.log(`LOGGING MESSAGE: ${message}`));
     });
 }
-
 main();
