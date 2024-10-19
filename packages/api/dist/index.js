@@ -23,14 +23,15 @@ const pubsub_1 = require("pubsub");
 const app = express();
 const server = http_1.default.createServer(app);
 const io = new socket_1.default(server).io;
+const PORT = process.argv[2] || process.env.PORT || 3000;
 app.use((0, cors_1.default)());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = yield ((_a = prisma_client_1.default.message) === null || _a === void 0 ? void 0 : _a.findMany());
     return res.json({ success: "ok!!", messages });
 }));
-server.listen(3000, () => {
-    console.log("Server listening to port 3000");
+server.listen(PORT, () => {
+    console.log(`Server listening to port ${PORT}: `);
 });
 io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     socket.on("send-msg", (data) => __awaiter(void 0, void 0, void 0, function* () {

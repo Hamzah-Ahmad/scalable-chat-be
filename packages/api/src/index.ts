@@ -14,6 +14,7 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new SocketService(server).io;
+const PORT = process.argv[2] || process.env.PORT || 3000;
 
 app.use(cors());
 app.get("/", async (req: Request, res: Response) => {
@@ -21,8 +22,8 @@ app.get("/", async (req: Request, res: Response) => {
   return res.json({ success: "ok!!", messages });
 });
 
-server.listen(3000, () => {
-  console.log("Server listening to port 3000");
+server.listen(PORT, () => {
+  console.log(`Server listening to port ${PORT}: `);
 });
 
 io.on("connection", async (socket) => {
