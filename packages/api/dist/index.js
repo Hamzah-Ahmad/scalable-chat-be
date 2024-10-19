@@ -56,7 +56,6 @@ function init() {
             // });
         }));
         pubsub_1.subscriber.subscribe("MESSAGE", (message) => {
-            console.log("!!!!");
             io.emit("receive-msg", `Received ${message}`);
         });
     });
