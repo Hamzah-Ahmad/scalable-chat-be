@@ -17,7 +17,9 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield exports.publisher.connect();
         yield exports.subscriber.connect();
-        yield exports.subscriber.subscribe("MESSAGE", (message) => console.log(`LOGGING MESSAGE: ${message}`));
+        // await subscriber.subscribe("MESSAGE", (message) =>
+        //   console.log(`LOGGING MESSAGE: ${message}`)
+        // );
     });
 }
 main();

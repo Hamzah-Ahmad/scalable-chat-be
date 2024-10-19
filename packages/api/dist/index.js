@@ -31,14 +31,34 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ success: "ok!!", messages });
 }));
 server.listen(PORT, () => {
-    console.log(`Server listening to port ${PORT}: `);
+    console.log(`Server listenings to port ${PORT}: `);
 });
-io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
-    socket.on("send-msg", (data) => __awaiter(void 0, void 0, void 0, function* () {
-        yield pubsub_1.publisher.publish("MESSAGE", data);
-        // io.emit("receive-msg", `New ${data}`);
-    }));
-    pubsub_1.subscriber.subscribe("MESSAGE", (message) => {
-        io.emit("receive-msg", `Received ${message}`);
+// io.on("connection", async (socket) => {
+//   socket.on("send-msg", async (data: any) => {
+//     await publisher.publish("MESSAGE", data);
+//     // io.emit("receive-msg", `New ${data}`);
+//   });
+//   subscriber.on("MESSAGE", (message) => {
+//     console.log("!!!!")
+//     io.emit("receive-msg", `Received ${message}`);
+//   });
+// });
+function init() {
+    return __awaiter(this, void 0, void 0, function* () {
+        io.on("connection", (socket) => __awaiter(this, void 0, void 0, function* () {
+            socket.on("send-msg", (data) => __awaiter(this, void 0, void 0, function* () {
+                yield pubsub_1.publisher.publish("MESSAGE", data);
+                // io.emit("receive-msg", `New ${data}`);
+            }));
+            // subscriber.on("MESSAGE", (message) => {
+            //   console.log("!!!!")
+            //   io.emit("receive-msg", `Received ${message}`);
+            // });
+        }));
+        pubsub_1.subscriber.subscribe("MESSAGE", (message) => {
+            console.log("!!!!");
+            io.emit("receive-msg", `Received ${message}`);
+        });
     });
-}));
+}
+init();

@@ -23,16 +23,37 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server listening to port ${PORT}: `);
+  console.log(`Server listenings to port ${PORT}: `);
 });
 
-io.on("connection", async (socket) => {
-  socket.on("send-msg", async (data: any) => {
-    await publisher.publish("MESSAGE", data);
-    // io.emit("receive-msg", `New ${data}`);
+// io.on("connection", async (socket) => {
+//   socket.on("send-msg", async (data: any) => {
+//     await publisher.publish("MESSAGE", data);
+//     // io.emit("receive-msg", `New ${data}`);
+//   });
+
+//   subscriber.on("MESSAGE", (message) => {
+//     console.log("!!!!")
+//     io.emit("receive-msg", `Received ${message}`);
+//   });
+// });
+
+async function init() {
+  io.on("connection", async (socket) => {
+    socket.on("send-msg", async (data: any) => {
+      await publisher.publish("MESSAGE", data);
+      // io.emit("receive-msg", `New ${data}`);
+    });
+
+    // subscriber.on("MESSAGE", (message) => {
+    //   console.log("!!!!")
+    //   io.emit("receive-msg", `Received ${message}`);
+    // });
   });
 
   subscriber.subscribe("MESSAGE", (message) => {
     io.emit("receive-msg", `Received ${message}`);
   });
-});
+}
+
+init();
