@@ -20,6 +20,7 @@ const express = require("express");
 const prisma_client_1 = __importDefault(require("prisma-client"));
 const socket_1 = __importDefault(require("./socket"));
 const pubsub_1 = require("pubsub");
+const worker_queue_1 = require("worker-queue");
 const app = express();
 const server = http_1.default.createServer(app);
 const io = new socket_1.default(server).io;
@@ -46,6 +47,7 @@ server.listen(PORT, () => {
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
         io.on("connection", (socket) => __awaiter(this, void 0, void 0, function* () {
+            yield worker_queue_1.producer.connect();
             socket.on("send-msg", (data) => __awaiter(this, void 0, void 0, function* () {
                 yield pubsub_1.publisher.publish("MESSAGE", data);
                 // io.emit("receive-msg", `New ${data}`);
@@ -55,9 +57,15 @@ function init() {
             //   io.emit("receive-msg", `Received ${message}`);
             // });
         }));
-        pubsub_1.subscriber.subscribe("MESSAGE", (message) => {
+        pubsub_1.subscriber.subscribe("MESSAGE", (message) => __awaiter(this, void 0, void 0, function* () {
             io.emit("receive-msg", `Received ${message}`);
-        });
+            yield worker_queue_1.producer.send({
+                topic: "MESSAGES",
+                messages: [
+                    { value: message },
+                ],
+            });
+        }));
     });
 }
 init();

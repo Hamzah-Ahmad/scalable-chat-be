@@ -9,6 +9,7 @@ import { Server } from "socket.io";
 import prismaClient from "prisma-client";
 import SocketService from "./socket";
 import { publisher, subscriber } from "pubsub";
+import { producer } from "worker-queue";
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,7 @@ server.listen(PORT, () => {
 
 async function init() {
   io.on("connection", async (socket) => {
+    await producer.connect();
     socket.on("send-msg", async (data: any) => {
       await publisher.publish("MESSAGE", data);
       // io.emit("receive-msg", `New ${data}`);
@@ -51,8 +53,14 @@ async function init() {
     // });
   });
 
-  subscriber.subscribe("MESSAGE", (message) => {
+  subscriber.subscribe("MESSAGE", async (message) => {
     io.emit("receive-msg", `Received ${message}`);
+    await producer.send({
+      topic: "MESSAGES",
+      messages: [
+        {value: message },
+      ],
+    })
   });
 }
 
