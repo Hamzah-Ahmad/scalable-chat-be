@@ -27,9 +27,7 @@ function initializeConsumer() {
             autoCommit: false,
             eachMessage: (_a) => __awaiter(this, [_a], void 0, function* ({ topic, partition, message }) {
                 var _b;
-                console.log("Reached here! ");
                 try {
-                    console.log("And here! ");
                     yield prisma_client_1.default.message.create({
                         data: {
                             text: ((_b = message.value) === null || _b === void 0 ? void 0 : _b.toString()) || "",
