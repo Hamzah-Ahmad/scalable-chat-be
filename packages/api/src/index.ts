@@ -27,30 +27,13 @@ server.listen(PORT, () => {
   console.log(`Server listenings to port ${PORT}: `);
 });
 
-// io.on("connection", async (socket) => {
-//   socket.on("send-msg", async (data: any) => {
-//     await publisher.publish("MESSAGE", data);
-//     // io.emit("receive-msg", `New ${data}`);
-//   });
-
-//   subscriber.on("MESSAGE", (message) => {
-//     console.log("!!!!")
-//     io.emit("receive-msg", `Received ${message}`);
-//   });
-// });
-
-async function init() {
+async function main() {
   io.on("connection", async (socket) => {
     await producer.connect();
     socket.on("send-msg", async (data: any) => {
       await publisher.publish("MESSAGE", data);
       // io.emit("receive-msg", `New ${data}`);
     });
-
-    // subscriber.on("MESSAGE", (message) => {
-    //   console.log("!!!!")
-    //   io.emit("receive-msg", `Received ${message}`);
-    // });
   });
 
   subscriber.subscribe("MESSAGE", async (message) => {
@@ -64,4 +47,4 @@ async function init() {
   });
 }
 
-init();
+main();

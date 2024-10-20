@@ -21,7 +21,6 @@ async function createTopicIfNotExists(
           },
         ],
       });
-      console.log(`Topic ${topic} created successfully`);
     } else {
       console.log(`Topic ${topic} already exists`);
     }
