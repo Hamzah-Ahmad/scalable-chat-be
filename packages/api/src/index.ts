@@ -28,8 +28,8 @@ server.listen(PORT, () => {
 });
 
 async function main() {
+  await producer.connect();
   io.on("connection", async (socket) => {
-    await producer.connect();
     socket.on("send-msg", async (data: any) => {
       await publisher.publish("MESSAGE", data);
       // io.emit("receive-msg", `New ${data}`);

@@ -29,33 +29,19 @@ app.use((0, cors_1.default)());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = yield ((_a = prisma_client_1.default.message) === null || _a === void 0 ? void 0 : _a.findMany());
-    res.json({ success: "ok!!", messages });
+    res.json({ success: "ok", messages });
 }));
 server.listen(PORT, () => {
     console.log(`Server listenings to port ${PORT}: `);
 });
-// io.on("connection", async (socket) => {
-//   socket.on("send-msg", async (data: any) => {
-//     await publisher.publish("MESSAGE", data);
-//     // io.emit("receive-msg", `New ${data}`);
-//   });
-//   subscriber.on("MESSAGE", (message) => {
-//     console.log("!!!!")
-//     io.emit("receive-msg", `Received ${message}`);
-//   });
-// });
-function init() {
+function main() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield worker_queue_1.producer.connect();
         io.on("connection", (socket) => __awaiter(this, void 0, void 0, function* () {
-            yield worker_queue_1.producer.connect();
             socket.on("send-msg", (data) => __awaiter(this, void 0, void 0, function* () {
                 yield pubsub_1.publisher.publish("MESSAGE", data);
                 // io.emit("receive-msg", `New ${data}`);
             }));
-            // subscriber.on("MESSAGE", (message) => {
-            //   console.log("!!!!")
-            //   io.emit("receive-msg", `Received ${message}`);
-            // });
         }));
         pubsub_1.subscriber.subscribe("MESSAGE", (message) => __awaiter(this, void 0, void 0, function* () {
             io.emit("receive-msg", `Received ${message}`);
@@ -68,4 +54,4 @@ function init() {
         }));
     });
 }
-init();
+main();

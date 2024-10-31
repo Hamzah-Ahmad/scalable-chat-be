@@ -30,7 +30,6 @@ function createTopicIfNotExists(topic_1) {
                         },
                     ],
                 });
-                console.log(`Topic ${topic} created successfully`);
             }
             else {
                 console.log(`Topic ${topic} already exists`);

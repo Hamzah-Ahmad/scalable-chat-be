@@ -21,20 +21,6 @@ const client_1 = __importDefault(require("./client"));
 //   brokers: ["localhost:9092"],
 // });
 exports.producer = client_1.default.producer();
-// async function main() {
-//   await consumer.connect();
-//   await consumer.subscribe({
-//     topic: "messages",
-//     fromBeginning: true,
-//   });
-//   await consumer.run({
-//     eachMessage: async ({ topic, partition, message }) => {
-//       console.log(
-//         `Consumer Log: ${message?.value?.toString()}, Partition: ${partition}`
-//       );
-//     },
-//   });
-// }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, admin_1.initializeQueue)();
