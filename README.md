@@ -9,6 +9,7 @@ It uses a Pub/Sub mechanism to coordinate and scale socket servers, ensuring mes
 - Kafka
 - Prisma
 - Postgres
+- Docker
 - Lerna package manager
   
 ![image](https://github.com/user-attachments/assets/2bccfc78-e64f-4d07-b144-416c3f9a67f9)
